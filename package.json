@@ -1,0 +1,42 @@
+{
+  "name": "gendiff-igakim2",
+  "version": "0.0.2",
+  "description": "difference generator",
+  "main": "index.js",
+  "bin": {
+    "gendiff": "dist/bin/gendiff.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "babel-cli": "*",
+    "babel-core": "*",
+    "babel-eslint": "*",
+    "babel-preset-env": "*",
+    "babel-preset-stage-0": "*",
+    "eslint": "^4.18.2",
+    "eslint-config-airbnb-base": "*",
+    "eslint-plugin-import": "*"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "babel-node": "babel-node",
+    "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
+    "eslint": "eslint",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/igakim/project-lvl2-s225.git"
+  },
+  "author": "Igor Kim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/igakim/project-lvl2-s225/issues"
+  },
+  "homepage": "https://github.com/igakim/project-lvl2-s225#readme",
+  "dependencies": {
+    "commander": "^2.15.0"
+  }
+}
