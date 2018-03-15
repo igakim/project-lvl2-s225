@@ -1,0 +1,24 @@
+{
+  name: list,
+  body: [
+    {
+      name: host,
+      value: hexlet.io,
+      status: 'unchanged',
+      children: []
+    },
+    {
+      name: timeout,
+      value: 50,
+      status: {
+        newValue: 20
+      },
+      children: []
+    },
+    {
+      name: proxy,
+      value: 123.234.53.22,
+      status: 'deleted'
+    }
+  ]
+}
