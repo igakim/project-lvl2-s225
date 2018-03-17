@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { genDiff, generateAst } from '../src';
+import genDiff from '../src';
 
 const beforeJSON = '__tests__/__fixtures__/before.json';
 const afterJSON = '__tests__/__fixtures__/after.json';
@@ -26,51 +26,26 @@ test('compare two ini', () => {
   expect(genDiff(beforeINI, afterINI)).toBe(expected);
 });
 
-test('parse ast tree', () => {
-//  {
-//     host: hexlet.io
-//   + timeout: 20
-//   - timeout: 50
-//   - proxy: 123.234.53.22
-//   + verbose: true
-// }
-  const expected = [
-        {
-          name: 'host',
-          values: {
-            before: 'hexlet.io',
-            after: 'hexlet.io',
-          },
-          status: 'unchanged',
-          children: [],
-        },
-        {
-          name: 'timeout',
-          values: {
-            before: 50,
-            after: 20,
-          },
-          status: 'changed',
-          children: [],
-        },
-        {
-          name: 'proxy',
-          values: {
-            before: '123.234.53.22',
-            after: undefined,
-          },
-          status: 'deleted',
-          children: [],
-        },
-        {
-          name: 'verbose',
-          values: {
-            before: undefined,
-            after: true,
-          },
-          status: 'added',
-          children: [],
-        }
-      ];
-  expect(generateAst(beforeJSON, afterJSON)).toEqual(expected);
+const beforeJSONNested = '__tests__/__fixtures__/beforeAst.json';
+const afterJSONNested = '__tests__/__fixtures__/afterAst.json';
+
+test('compare two nested json', () => {
+  const expected = fs.readFileSync('__tests__/__fixtures__/expected2.txt', 'utf-8');
+  expect(genDiff(beforeJSONNested, afterJSONNested)).toBe(expected);
+});
+
+const beforeYAMLNested = '__tests__/__fixtures__/beforeAst.yml';
+const afterYAMLNested = '__tests__/__fixtures__/afterAst.yml';
+
+test('compare two nested yaml', () => {
+  const expected = fs.readFileSync('__tests__/__fixtures__/expected2.txt', 'utf-8');
+  expect(genDiff(beforeJSONNested, afterJSONNested)).toBe(expected);
+});
+
+const beforeINILNested = '__tests__/__fixtures__/beforeAst.ini';
+const afterININested = '__tests__/__fixtures__/afterAst.ini';
+
+test('compare two nested ini', () => {
+  const expected = fs.readFileSync('__tests__/__fixtures__/expected2.txt', 'utf-8');
+  expect(genDiff(beforeJSONNested, afterJSONNested)).toBe(expected);
 });

@@ -3,64 +3,70 @@ import fs from 'fs';
 import path from 'path';
 import getParser from './parse';
 
-const toString = (key, after, before) => {
-  if (after[key] === before[key]) {
-    return `    ${key}: ${after[key]}\n`;
-  } else if (!after[key]) {
-    return `  - ${key}: ${before[key]}\n`;
-  } else if (!before[key]) {
-    return `  + ${key}: ${after[key]}\n`;
-  }
-  return `  + ${key}: ${after[key]}\n  - ${key}: ${before[key]}\n`;
-};
+const makeNode = (key, type, children, valueAfter, valueBefore) =>
+  ({
+    key,
+    type,
+    children,
+    valueAfter,
+    valueBefore,
+  });
 
-const template = {
-  name: '',
-  values: {
-    before: '',
-    after: '',
-  },
-  status: '',
-  children: [],
-};
-
-export const genDiff = (beforePath, afterPath) => {
-  const format = path.extname(beforePath);
-  const parse = getParser(format);
-  const before = fs.readFileSync(beforePath, 'utf-8');
-  const after = fs.readFileSync(afterPath, 'utf-8');
-  const parsedBefore = parse(before);
-  const parsedAfter = parse(after);
-  const united = _.union(_.keys(parsedBefore), _.keys(parsedAfter));
-  return `{\n${united.map(el => toString(el, parsedAfter, parsedBefore)).join('')}}`;
-};
-
-export const generateAst = (beforePath, afterPath) => {
-  const format = path.extname(beforePath);
-  const parse = getParser(format);
-  const before = fs.readFileSync(beforePath, 'utf-8');
-  const after = fs.readFileSync(afterPath, 'utf-8');
-  const parsedBefore = parse(before);
-  const parsedAfter = parse(after);
+const makeAst = (parsedBefore, parsedAfter) => {
   const united = _.union(_.keys(parsedBefore), _.keys(parsedAfter));
   return united.map((el) => {
-    const name = el;
-    const values = { before: parsedBefore[el], after: parsedAfter[el] };
-    if (values.before === values.after) {
-      return {
-        ...template, status: 'unchanged', name, values,
-      };
-    } else if (!values.after) {
-      return {
-        ...template, status: 'deleted', name, values,
-      };
-    } else if (!values.before) {
-      return {
-        ...template, status: 'added', name, values,
-      };
+    if (parsedBefore[el] === parsedAfter[el]) {
+      return makeNode(el, 'unchanged', [], parsedAfter[el], parsedBefore[el]);
+    } else if (!parsedAfter[el]) {
+      return makeNode(el, 'deleted', [], parsedAfter[el], parsedBefore[el]);
+    } else if (!parsedBefore[el]) {
+      return makeNode(el, 'added', [], parsedAfter[el]);
+    } else if (parsedAfter[el] instanceof Object && parsedBefore[el] instanceof Object) {
+      return makeNode(el, 'nested', makeAst(parsedBefore[el], parsedAfter[el]));
     }
-    return {
-      ...template, status: 'changed', name, values,
-    };
+    return makeNode(el, 'changed', [], parsedAfter[el], parsedBefore[el]);
   });
+};
+
+const objToString = (o, depth) => {
+  if (o instanceof Object) {
+    const keys = Object.keys(o);
+    const res = keys.reduce((acc, el) => `${acc}${' '.repeat(4)}${el}: ${o[el]}\n`, '');
+    return `{\n${' '.repeat(depth * 4)}${res}${' '.repeat(depth * 4)}}`;
+  }
+  return o;
+};
+
+const buildDiff = (el, depth) => {
+  const after = objToString(el.valueAfter, depth);
+  const before = objToString(el.valueBefore, depth);
+  if (el.type === 'changed') {
+    return `${' '.repeat((depth * 4) - 2)}+ ${el.key}: ${after}\n${' '.repeat((depth * 4) - 2)}- ${el.key}: ${before}\n`;
+  } else if (el.type === 'added') {
+    return `${' '.repeat((depth * 4) - 2)}+ ${el.key}: ${after}\n`;
+  } else if (el.type === 'deleted') {
+    return `${' '.repeat((depth * 4) - 2)}- ${el.key}: ${before}\n`;
+  }
+  return `${' '.repeat(depth * 4)}${el.key}: ${after}\n`;
+};
+
+const render = (ast, depth = 1) => {
+  const ready = ast.reduce((acc, el) => {
+    if (el.type === 'nested') {
+      return `${acc}${' '.repeat(depth * 4)}${el.key}: ${render(el.children, depth + 1)}\n`;
+    }
+    return `${acc}${buildDiff(el, depth)}`;
+  }, '');
+  return `{\n${ready}${' '.repeat((depth * 4) - 4)}}`;
+};
+
+export default (beforePath, afterPath) => {
+  const format = path.extname(beforePath);
+  const parse = getParser(format);
+  const before = fs.readFileSync(beforePath, 'utf-8');
+  const after = fs.readFileSync(afterPath, 'utf-8');
+  const parsedBefore = parse(before);
+  const parsedAfter = parse(after);
+  const ast = makeAst(parsedBefore, parsedAfter);
+  return render(ast);
 };
