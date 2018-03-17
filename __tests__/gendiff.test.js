@@ -49,3 +49,13 @@ test('compare two nested ini', () => {
   const expected = fs.readFileSync('__tests__/__fixtures__/expected2.txt', 'utf-8');
   expect(genDiff(beforeJSONNested, afterJSONNested)).toBe(expected);
 });
+
+test('should be plain', () => {
+  const expected = fs.readFileSync('__tests__/__fixtures__/expected3.txt', 'utf-8');
+  expect(genDiff(beforeJSONNested, afterJSONNested, {format: 'plain'})).toBe(expected);
+});
+
+test('should be plain 2', () => {
+  const expected = fs.readFileSync('__tests__/__fixtures__/expected4.txt', 'utf-8');
+  expect(genDiff(beforeJSON, afterJSON, {format: 'plain'})).toBe(expected);
+});
