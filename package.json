@@ -1,6 +1,6 @@
 {
   "name": "gendiff-igakim2",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "difference generator",
   "main": "index.js",
   "bin": {
