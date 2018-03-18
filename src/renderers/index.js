@@ -1,14 +1,16 @@
 import plain from './plain';
-import defaultRender from './default';
+import tree from './default';
 import json from './json';
 
 const renderers = {
   plain,
   json,
-  default: defaultRender,
+  tree,
 };
 
-export default (format = 'default') => {
+export const getRenderList = () => Object.keys(renderers).join(', ');
+
+export const getRender = (format = 'tree') => {
   const render = renderers[format];
   if (!render) {
     throw new Error(`unkown option or format: ${format}`);

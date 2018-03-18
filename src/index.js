@@ -2,7 +2,7 @@ import _ from 'lodash';
 import fs from 'fs';
 import path from 'path';
 import getParser from './parse';
-import getRender from './renderers';
+import { getRender } from './renderers';
 
 const makeAst = (parsedBefore, parsedAfter) => {
   const united = _.union(_.keys(parsedBefore), _.keys(parsedAfter));
