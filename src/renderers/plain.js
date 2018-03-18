@@ -7,9 +7,7 @@ const render = (ast, path = '') =>
       case 'updated':
         return acc.concat(`Property '${path}${key}' was updated. From ${before} to ${after}`);
       case 'added':
-        return acc.concat(after === 'complex value' ?
-          `Property '${path}${key}' was added with ${after}` :
-          `Property '${path}${key}' was added with value: ${after}`);
+        return acc.concat(`Property '${path}${key}' was added with ${after}`);
       case 'removed':
         return acc.concat(`Property '${path}${key}' was removed`);
       case 'nested':

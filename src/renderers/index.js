@@ -1,14 +1,15 @@
 import plain from './plain';
-import def from './default';
+import defaultRender from './default';
 import json from './json';
 
 const renderers = {
   plain,
   json,
+  default: defaultRender,
 };
 
-export default (format) => {
-  const render = format ? renderers[format] : def;
+export default (format = 'default') => {
+  const render = renderers[format];
   if (!render) {
     throw new Error(`unkown option or format: ${format}`);
   }
