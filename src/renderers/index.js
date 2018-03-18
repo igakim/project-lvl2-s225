@@ -1,8 +1,10 @@
 import plain from './plain';
 import def from './default';
+import json from './json';
 
 const renderers = {
   plain,
+  json,
 };
 
 export default (format) => {
