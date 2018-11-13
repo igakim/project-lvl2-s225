@@ -9,7 +9,7 @@ lint:
 test:
 	npm run test
 test-coverage:
-  npm test -- --coverage
+  npm run test -- --coverage
 diff:
 	npm run babel-node -- src/bin/gendiff.js __tests__/__fixtures__/afterAst.json __tests__/__fixtures__/beforeAst.json
 plainDiff:
