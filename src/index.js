@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import getParser from './parse';
 import { getRender } from './renderers';
-// test
+
 const makeAst = (parsedBefore, parsedAfter) => {
   const united = _.union(_.keys(parsedBefore), _.keys(parsedAfter));
   return united.map((key) => {
